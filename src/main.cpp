@@ -140,8 +140,8 @@ void pcnt_init_channel(pcnt_unit_t PCNT_UNIT,
         pcnt_config.channel = PCNT_CHANNEL;
         pcnt_config.unit = PCNT_UNIT;
         // What to do on the positive / negative edge of pulse input?
-        pcnt_config.pos_mode = PCNT_COUNT_INC;   // Count up on the positive edge
-        pcnt_config.neg_mode = PCNT_COUNT_DIS;   // Keep the counter value on the negative edge
+        pcnt_config.pos_mode = PCNT_COUNT_DIS;   // Keep the counter value on the rising edge
+        pcnt_config.neg_mode = PCNT_COUNT_INC;   // Count up on the falling edge
         // What to do when control input is low or high?
         pcnt_config.lctrl_mode = PCNT_MODE_REVERSE; // Reverse counting direction if low
         pcnt_config.hctrl_mode = PCNT_MODE_KEEP;    // Keep the primary counter mode if high
@@ -205,10 +205,9 @@ int serialParse(char incomingStr[])
   // Parse the C-string and execute the command
 
   // Format: [cmd] [arg1] [arg2] ...
-  // Ex:     sarStart 72 51200 0.94937 10 256 64 1 0
-  //         explanation of above <start> <mm/rev> <steps/rev> <step size in mm> <offset in mm> <num x steps> <num y steps> <num radars> <separation between radars in mm>
-  // Ex:     sarStop 
-  // Ex:     sarNext (next horizontal scan is ready, vertical motion is done)
+  // Ex:     sarStart 72 20000 0.94937 10 256 64 1 0
+  //         explanation of above <start> <mm/rev> <steps/rev> <step size in mm> <offset in mm> <num x steps> <num y steps> <radar select> <separation between radars in mm>
+
   
   char * command;
   char * args[8];
@@ -357,6 +356,34 @@ void sendTriggerTask1(void * parameters)
 
   // Send the trigger
   GPIO.out_w1ts = ((uint32_t)1 << RADAR1_TRIGGER_PIN);
+
+  // Waits ~125 ns
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  
   GPIO.out_w1tc = ((uint32_t)1 << RADAR1_TRIGGER_PIN);
 
   // End task
@@ -370,6 +397,34 @@ void sendTriggerTask2(void * parameters)
 
   // Send the trigger
   GPIO.out_w1ts = ((uint32_t)1 << RADAR2_TRIGGER_PIN);
+
+  // Waits ~125 ns
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+  asm("nop");
+
   GPIO.out_w1tc = ((uint32_t)1 << RADAR2_TRIGGER_PIN);
 
   // End task
@@ -1008,6 +1063,8 @@ void pulseListenerTask(void * parameters)
 void setup()
 {
   Serial.begin(115200);
+
+  setCpuFrequencyMhz(240);
 
   pinMode(RADAR1_TRIGGER_PIN, OUTPUT);
   pinMode(RADAR2_TRIGGER_PIN, OUTPUT);
